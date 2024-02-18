@@ -1,20 +1,28 @@
 import collections
 import os
+import sqlite3
 
 from flask import Flask, render_template, request, url_for, flash, redirect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '3d1d11bc16ae475be87bfaecf9cfc4bf39aa64c49ff3a303'
 
-messages = collections.deque([], 5)
-
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/')
 def index():
-    return render_template('index.html', messages=messages)
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM posts').fetchall()
+    print(posts)
+    conn.close()
+    return render_template('index.html', posts=posts)
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
+    print('beginning')
     if request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -24,7 +32,12 @@ def create():
         elif not content:
             flash('Content is required!')
         else:
-            messages.append({'title': title, 'content': content})
+            conn = get_db_connection()
+            print('gets here')
+            conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
+                         (title, content))
+            conn.commit()
+            conn.close()
             return redirect(url_for('index'))
 
     return render_template('create.html')
