@@ -1,3 +1,4 @@
+import collections
 import os
 
 from flask import Flask, render_template, request, url_for, flash, redirect
@@ -5,16 +6,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '3d1d11bc16ae475be87bfaecf9cfc4bf39aa64c49ff3a303'
 
-messages = [
-    {
-    'title': 'Message One',
-    'content': 'Message One Content Chicken'
-    },
-    {
-    'title': 'Message Two',
-    'content': 'Message Two Content'
-    }
-]
+messages = collections.deque([], 5)
 
 
 @app.route('/')
