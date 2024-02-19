@@ -39,15 +39,21 @@ def index():
         conn.close()
         return render_template('index.html', posts=posts)
     else:
-        content = request.form['content']
-        response = get_completion(content)
+        context = get_conversation()
+        input = request.form['content']
+        query = ""
+        if context != "":
+            query = 'The conversation history is between two triple backticks. ```' + context + '```\n'
+            query += 'With the above conversation history, answer the following question: '
+        query += input
+        response = get_completion(query)
 
-        if not content:
+        if not input:
             flash('Content is required!')
         else:
             conn = get_db_connection()
             conn.execute('INSERT INTO posts (content, role) VALUES (?, ?)',
-                         (content,'user'))
+                         (input,'user'))
             conn.execute('INSERT INTO posts (content, role) VALUES (?, ?)',
                          (response,'gpt'))
             conn.commit()
