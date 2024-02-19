@@ -4,7 +4,7 @@ import sqlite3
 
 from flask import Flask, render_template, request, url_for, flash, redirect
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static/")
 app.config['SECRET_KEY'] = '3d1d11bc16ae475be87bfaecf9cfc4bf39aa64c49ff3a303'
 
 def get_db_connection():
@@ -17,7 +17,6 @@ def index():
     conn = get_db_connection()
     if request.method == 'GET':
         posts = conn.execute('SELECT * FROM posts').fetchall()
-        print(posts)
         conn.close()
         return render_template('index.html', posts=posts)
     else:
@@ -27,7 +26,6 @@ def index():
             flash('Content is required!')
         else:
             conn = get_db_connection()
-            print('gets here')
             conn.execute('INSERT INTO posts (content) VALUES (?)',
                          (content,))
             conn.commit()

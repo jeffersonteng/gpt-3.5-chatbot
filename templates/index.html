@@ -8,14 +8,17 @@
             <span>{{ post['content'] }}</span>
         </div>
     {% endfor %}
-    <h1>{% block input_title %} Add a New Post {% endblock %}</h1>
-    <form method="post">
-        <textarea name="content"
-                  placeholder="Post content"
-                  rows="2"
-                  cols="60"
-                  >{{ request.form['content'] }}</textarea>
+    <br>
+    <form id="form" method="post">
+        <textarea 
+           id="query"
+           name="content"
+           placeholder="Post content"
+           rows="2"
+           cols="60"
+           autofocus
+        >{{ request.form['content'] }}</textarea>
         <br>
-        <button type="submit">Submit</button>
+        <button id="myButton" class="submit" type="submit" hidden>Submit</button>
     </form>
 {% endblock %}
