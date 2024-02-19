@@ -22,6 +22,15 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
   )
   return response.choices[0].message.content
 
+def get_conversation():
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM posts').fetchall()
+    convo = ""
+    for post in posts:
+        convo += "\n" + post['content']
+    conn.close()
+    return convo
+
 @app.route('/', methods=('GET', 'POST'))
 def index():
     conn = get_db_connection()
@@ -37,10 +46,10 @@ def index():
             flash('Content is required!')
         else:
             conn = get_db_connection()
-            conn.execute('INSERT INTO posts (content) VALUES (?)',
-                         (content,))
-            conn.execute('INSERT INTO posts (content) VALUES (?)',
-                         (response,))
+            conn.execute('INSERT INTO posts (content, role) VALUES (?, ?)',
+                         (content,'user'))
+            conn.execute('INSERT INTO posts (content, role) VALUES (?, ?)',
+                         (response,'gpt'))
             conn.commit()
             conn.close()
             return redirect(url_for('index')) 
