@@ -1,12 +1,12 @@
 import collections
 import os
 import sqlite3
+from agents import Obnoxious_Agent
 from openai import OpenAI
 
 from flask import Flask, render_template, request, url_for, flash, redirect
 
 app = Flask(__name__, static_folder="static/")
-app.config['SECRET_KEY'] = '3d1d11bc16ae475be87bfaecf9cfc4bf39aa64c49ff3a303'
 client = OpenAI(api_key=os.environ['OPEN_AI'])
 
 def get_db_connection():
@@ -33,6 +33,7 @@ def get_conversation():
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
+    ob = Obnoxious_Agent('client')
     conn = get_db_connection()
     if request.method == 'GET':
         posts = conn.execute('SELECT * FROM posts').fetchall()
